@@ -11,7 +11,7 @@ public class UserDaoJDBCImpl implements UserDao {
     Util util = new Util();
     User user = new User();
     Connection connection = util.getDbConnection();
-
+//test git
     private static Long idCounter = 0L;
     private final static String CREATE_DB = "CREATE DATABASE IF NOT EXISTS my_db";
     private final static String USE_DB = "USE my_db";
