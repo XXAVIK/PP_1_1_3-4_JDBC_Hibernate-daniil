@@ -9,7 +9,6 @@ import java.util.List;
 
 public class UserDaoJDBCImpl implements UserDao {
     private Connection connection = null;
-    private static Long idCounter = 0L;                                                   //Счетчик для поля id
     private final static String CREATE_DB = "CREATE DATABASE IF NOT EXISTS my_db";        //SQL запрос на создание database
     private final static String USE_DB = "USE my_db";                                     //SQL запрос на использование database
     private final static String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS Users" +       //SQL запрос на создание таблицы
@@ -24,8 +23,6 @@ public class UserDaoJDBCImpl implements UserDao {
     private final static String DROP_TB = "DROP TABLE IF EXISTS users";                    //SQL запрос на удаление таблицы
 
     private final static String SAVE_USER = "INSERT INTO users (name, lastName, age) VALUES(?,?,?)"; //Сохранение
-
-    private final static String REMOVE_USER = "DELETE FROM users WHERE id=?";              //Удаление
 
     private final static String CLEAN_TABLE = "DELETE FROM users";                         //Очистка таблицы
 
@@ -97,7 +94,7 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void removeUserById(long id) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM users WHERE id="+id)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM users WHERE id=" + id)) {
             preparedStatement.executeUpdate();
 
             connection.commit();
@@ -154,6 +151,5 @@ public class UserDaoJDBCImpl implements UserDao {
             }
             throw new RuntimeException(e);
         }
-        idCounter = 0L;  //Сброс счетчика id после очистки таблицы
     }
 }
