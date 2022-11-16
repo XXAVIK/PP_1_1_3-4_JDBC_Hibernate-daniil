@@ -15,22 +15,21 @@ public class UserDaoJDBCImpl implements UserDao {
     private final static String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS Users" +       //SQL запрос на создание таблицы
             "(" +
 
-            "  id int,\n" +
+            "  id int NOT NULL AUTO_INCREMENT,\n" +
             "  name varchar(15),\n" +
             "  lastname varchar(25),\n" +
-            "  age int\n" +
-
-            ");";
+            "  age int,\n" +
+            "  PRIMARY KEY (id)\n"
+            + ");";
     private final static String DROP_TB = "DROP TABLE IF EXISTS users";                    //SQL запрос на удаление таблицы
 
-    private final static String SAVE_USER = "INSERT INTO users (id, name, lastName, age) VALUES(?,?,?,?)"; //Сохранение
+    private final static String SAVE_USER = "INSERT INTO users (name, lastName, age) VALUES(?,?,?)"; //Сохранение
 
     private final static String REMOVE_USER = "DELETE FROM users WHERE id=?";              //Удаление
 
     private final static String CLEAN_TABLE = "DELETE FROM users";                         //Очистка таблицы
 
     private final static String GET_USERS = "SELECT id, name, lastname, age from users";   // Получение всех данных о USER
-
 
     public UserDaoJDBCImpl() {
         connection = Util.getDbConnection();     // Получаем соединение с БД
@@ -79,14 +78,13 @@ public class UserDaoJDBCImpl implements UserDao {
              Statement statement = connection.createStatement()) {
             statement.execute(CREATE_DB);
             statement.execute(USE_DB);
-            preparedStatement.setLong(1, ++idCounter);
-            preparedStatement.setString(2, name);
-            preparedStatement.setString(3, lastName);
-            preparedStatement.setByte(4, age);
+            preparedStatement.setString(1, name);
+            preparedStatement.setString(2, lastName);
+            preparedStatement.setByte(3, age);
             preparedStatement.executeUpdate();
 
             connection.commit();
-            System.out.println("User с именем – " + name + " добавлен в базу данных, id=" + idCounter);
+            System.out.println("User с именем – " + name + " добавлен в базу данных");
         } catch (SQLException e) {
             System.out.println("Error while saving");
             try {
@@ -99,8 +97,7 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void removeUserById(long id) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(REMOVE_USER)) {
-            preparedStatement.setLong(1, id);
+        try (PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM users WHERE id="+id)) {
             preparedStatement.executeUpdate();
 
             connection.commit();
