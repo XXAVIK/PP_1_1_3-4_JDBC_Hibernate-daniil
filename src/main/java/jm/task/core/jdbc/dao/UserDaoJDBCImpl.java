@@ -8,9 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDaoJDBCImpl implements UserDao {
-    User user = new User();
-    Connection connection = null;
-    private List<User> userList = new ArrayList<>();
+    private Connection connection = null;
     private static Long idCounter = 0L;                                                   //Счетчик для поля id
     private final static String CREATE_DB = "CREATE DATABASE IF NOT EXISTS my_db";        //SQL запрос на создание database
     private final static String USE_DB = "USE my_db";                                     //SQL запрос на использование database
@@ -46,9 +44,13 @@ public class UserDaoJDBCImpl implements UserDao {
             statement.execute(CREATE_TABLE);
 
             connection.commit();
-            connection.rollback();
         } catch (SQLException e) {
             System.out.println("Error creating Database");
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
             throw new RuntimeException(e);
         }
     }
@@ -60,16 +62,19 @@ public class UserDaoJDBCImpl implements UserDao {
             statement.execute(DROP_TB);
 
             connection.commit();
-            connection.rollback();
         } catch (SQLException e) {
             System.out.println("Error while dropping table");
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
             throw new RuntimeException(e);
         }
 
     }
 
     public void saveUser(String name, String lastName, byte age) {
-        User user1 = new User();
         try (PreparedStatement preparedStatement = connection.prepareStatement(SAVE_USER);
              Statement statement = connection.createStatement()) {
             statement.execute(CREATE_DB);
@@ -81,11 +86,14 @@ public class UserDaoJDBCImpl implements UserDao {
             preparedStatement.executeUpdate();
 
             connection.commit();
-            connection.rollback();
             System.out.println("User с именем – " + name + " добавлен в базу данных, id=" + idCounter);
-
         } catch (SQLException e) {
             System.out.println("Error while saving");
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
             throw new RuntimeException(e);
         }
     }
@@ -96,15 +104,21 @@ public class UserDaoJDBCImpl implements UserDao {
             preparedStatement.executeUpdate();
 
             connection.commit();
-            connection.rollback();
             System.out.println("User удален");
         } catch (SQLException e) {
             System.out.println("Error while removing");
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
             throw new RuntimeException(e);
         }
     }
 
     public List<User> getAllUsers() {
+        User user = new User();
+        List<User> userList = new ArrayList<>();
         try (Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery(GET_USERS);
             while (resultSet.next()) {
@@ -116,9 +130,13 @@ public class UserDaoJDBCImpl implements UserDao {
                 System.out.println(user);
             }
             connection.commit();
-            connection.rollback();
         } catch (SQLException e) {
             System.out.println("Error while getting list");
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
             throw new RuntimeException(e);
         }
         return userList;
@@ -129,10 +147,14 @@ public class UserDaoJDBCImpl implements UserDao {
             preparedStatement.executeUpdate();
 
             connection.commit();
-            connection.rollback();
             System.out.println("Таблица очищена");
         } catch (SQLException e) {
             System.out.println("Error while cleaning");
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
             throw new RuntimeException(e);
         }
         idCounter = 0L;  //Сброс счетчика id после очистки таблицы
