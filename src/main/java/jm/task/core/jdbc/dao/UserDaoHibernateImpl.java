@@ -10,7 +10,7 @@ import java.util.List;
 
 public class UserDaoHibernateImpl implements UserDao {
     private final static String DROP_TB = "DROP TABLE IF EXISTS users";
-    private final static String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS Users" +       //SQL запрос на создание таблицы
+    private final static String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS Users" +
             "(" +
 
             "  id int NOT NULL AUTO_INCREMENT,\n" +
@@ -32,7 +32,10 @@ public class UserDaoHibernateImpl implements UserDao {
             session.createSQLQuery(CREATE_TABLE).executeUpdate();
             session.getTransaction().commit();
         } catch (Exception e) {
-            transaction.rollback();
+            try (Session session = Util.getDbConnectionHibernate().openSession()) {
+                transaction = session.beginTransaction();
+                transaction.rollback();
+            }
             System.out.println("Error while creating table");
             throw new RuntimeException(e);
         }
@@ -47,7 +50,10 @@ public class UserDaoHibernateImpl implements UserDao {
             session.createSQLQuery(DROP_TB).executeUpdate();
             session.getTransaction().commit();
         } catch (Exception e) {
-            transaction.rollback();
+            try (Session session = Util.getDbConnectionHibernate().openSession()) {
+                transaction = session.beginTransaction();
+                transaction.rollback();
+            }
             System.out.println("Error while dropping table");
             throw new RuntimeException(e);
         }
@@ -61,13 +67,14 @@ public class UserDaoHibernateImpl implements UserDao {
         user.setAge(age);
         Transaction transaction = null;
         try (Session session = Util.getDbConnectionHibernate().getCurrentSession()) { //openSession()
-
             transaction = session.beginTransaction();
-
             session.save(user);
             session.getTransaction().commit();
         } catch (Exception e) {
-            transaction.rollback();
+            try (Session session = Util.getDbConnectionHibernate().openSession()) {
+                transaction = session.beginTransaction();
+                transaction.rollback();
+            }
             System.out.println("Error while saving user");
             throw new RuntimeException(e);
         }
@@ -82,8 +89,11 @@ public class UserDaoHibernateImpl implements UserDao {
             session.createQuery("DELETE User WHERE id=" + id).executeUpdate();
             session.getTransaction().commit();
         } catch (Exception e) {
-            transaction.rollback();
-            System.out.println("Error while removing user by Id");
+            try (Session session = Util.getDbConnectionHibernate().openSession()) {
+                transaction = session.beginTransaction();
+                transaction.rollback();
+            }
+            System.out.println("Error while removing by id");
             throw new RuntimeException(e);
         }
     }
@@ -102,8 +112,11 @@ public class UserDaoHibernateImpl implements UserDao {
             System.out.println(userList);
             session.getTransaction().commit();
         } catch (Exception e) {
-            transaction.rollback();
-            System.out.println("Error while getting Users");
+            try (Session session = Util.getDbConnectionHibernate().openSession()) {
+                transaction = session.beginTransaction();
+                transaction.rollback();
+            }
+            System.out.println("Error while getting users");
             throw new RuntimeException(e);
         }
         return userList;
