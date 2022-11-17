@@ -33,9 +33,8 @@ public class Util {
     }
 
     private static SessionFactory sessionFactory;
-    public static SessionFactory getDbConnectionHibernate()
 
-    {
+    public static SessionFactory getDbConnectionHibernate() {
         if (sessionFactory == null) {
             try {
                 Configuration configuration = new Configuration();
@@ -60,25 +59,4 @@ public class Util {
         }
         return sessionFactory;
     }
-//    public static Session getDbConnectionHibernate() {
-//        Session session = null;
-//        try (SessionFactory factory = new Configuration()
-//                .configure("hibernate.cfg.xml")
-//                .addAnnotatedClass(User.class)
-//                .buildSessionFactory()) {
-//            session = factory.getCurrentSession();
-//        }
-//        return session;
-//    }
-//    public static SessionFactory getDbConnectionHibernate() {
-//        SessionFactory factory = null;
-//        try (factory = new Configuration()
-//                .configure("hibernate.cfg.xml")
-//                .addAnnotatedClass(User.class)
-//                .buildSessionFactory()) {
-//            session = factory.getCurrentSession();
-//        }
-//        return session;
-//    }
-
 }
