@@ -29,7 +29,7 @@ public class UserDaoJDBCImpl implements UserDao {
     private final static String GET_USERS = "SELECT id, name, lastname, age from users";   // Получение всех данных о USER
 
     public UserDaoJDBCImpl() {
-        connection = Util.getDbConnection();     // Получаем соединение с БД
+        connection = Util.getDbConnectionJDBC();     // Получаем соединение с БД
     }
 
     public void createUsersTable() {
